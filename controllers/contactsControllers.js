@@ -10,9 +10,14 @@ import {
 export const getAllContacts = async (req, res) => {
 	const contacts = await getContacts()
 
-	if (!contacts) res.status(500).json({ message: 'Serwer error' })
-	if (!contacts.length)
+	if (!contacts) {
+		res.status(500).json({ message: 'Serwer error' })
+		return
+	}
+	if (!contacts.length) {
 		res.status(204).json({ message: 'The contact list is empty' })
+		return
+	}
 
 	res.status(200).json({
 		message: 'Request successful',
@@ -59,9 +64,14 @@ export const updateContact = async (req, res, next) => {
 	const { id } = req.params
 	const { name, email, phone } = req.body
 
+	if (!Object.keys(req.body).length) {
+		next(HttpError(404, 'Body must have at least one field'))
+		return
+	}
+
 	const changedContact = await changeContact(id, { name, email, phone })
 
 	!changeContact
 		? next(HttpError(404, 'Not found'))
-		: res.status(201).json(changedContact)
+		: res.status(200).json(changedContact)
 }
