@@ -7,7 +7,7 @@ const __dirname = path.dirname(__filename)
 
 const contactsPath = path.join(__dirname, '../', 'db', 'contacts.json')
 
-export async function getContacts() {
+export async function listContacts() {
 	try {
 		const readData = await readFile(contactsPath)
 		return JSON.parse(readData)
@@ -51,7 +51,7 @@ export async function removeContact(contactId) {
 	}
 }
 
-export async function addContact(name, email, phone) {
+export async function addContact({ name, email, phone }) {
 	try {
 		const data = await readFile(contactsPath)
 		let contacts = JSON.parse(data)

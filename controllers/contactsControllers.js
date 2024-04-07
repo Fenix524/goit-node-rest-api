@@ -1,14 +1,14 @@
 import HttpError from '../helpers/HttpError.js'
 import { updateContact as changeContact } from '../services/contactsServices.js'
 import {
-	getContacts,
+	listContacts,
 	getContactById,
 	removeContact,
 	addContact,
 } from '../services/contactsServices.js'
 
 export const getAllContacts = async (req, res) => {
-	const contacts = await getContacts()
+	const contacts = await listContacts()
 
 	if (!contacts) {
 		res.status(500).json({ message: 'Serwer error' })
@@ -19,24 +19,14 @@ export const getAllContacts = async (req, res) => {
 		return
 	}
 
-	res.status(200).json({
-		message: 'Request successful',
-		status: 200,
-		contacts,
-	})
+	res.status(200).json(contacts)
 }
 
 export const getOneContact = async (req, res, next) => {
 	const { id } = req.params
 	const contact = await getContactById(id)
 
-	!contact
-		? next(HttpError(404, 'Not found'))
-		: res.status(200).json({
-				message: 'Request successful',
-				status: 200,
-				contact,
-		  })
+	!contact ? next(HttpError(404, 'Not found')) : res.status(200).json(contact)
 }
 
 export const deleteContact = async (req, res, next) => {
@@ -45,16 +35,11 @@ export const deleteContact = async (req, res, next) => {
 
 	!removedContact
 		? next(HttpError(404, 'Not found'))
-		: res.status(200).json({
-				message: 'Request successful',
-				status: 200,
-				removedContact,
-		  })
+		: res.status(200).json(removedContact)
 }
 
 export const createContact = async (req, res, next) => {
-	const { name, email, phone } = req.body
-	const newContact = await addContact(name, email, phone)
+	const newContact = await addContact(req.body)
 	!newContact
 		? next(HttpError(404, 'Not found'))
 		: res.status(201).json(newContact)
@@ -65,13 +50,13 @@ export const updateContact = async (req, res, next) => {
 	const { name, email, phone } = req.body
 
 	if (!Object.keys(req.body).length) {
-		next(HttpError(404, 'Body must have at least one field'))
+		next(HttpError(400, 'Body must have at least one field'))
 		return
 	}
 
 	const changedContact = await changeContact(id, { name, email, phone })
 
-	!changeContact
+	!changedContact
 		? next(HttpError(404, 'Not found'))
 		: res.status(200).json(changedContact)
 }
