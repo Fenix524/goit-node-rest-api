@@ -1,114 +1,51 @@
-import { readFile, writeFile } from 'fs/promises'
-import path from 'path'
-import { fileURLToPath } from 'url'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
-const contactsPath = path.join(__dirname, '../', 'db', 'contacts.json')
+import { Contact } from '../models/contactModel.js'
 
 export async function listContacts() {
 	try {
-		const readData = await readFile(contactsPath)
-		return JSON.parse(readData)
+		return await Contact.find()
 	} catch (error) {
-		console.log('File not read', error)
+		console.log('DB not read', error)
 		return null
 	}
 }
 
 export async function getContactById(contactId) {
 	try {
-		const readData = await readFile(contactsPath)
-		return (
-			JSON.parse(readData).find(contact => contact.id === contactId) || null
-		)
+		return Contact.findById(contactId)
 	} catch (error) {
-		console.log('File not read', error)
+		console.log('DB not read', error)
 		return null
 	}
 }
 
 export async function removeContact(contactId) {
 	try {
-		let readData = await readFile(contactsPath)
-		let contacts = JSON.parse(readData)
-
-		const removedContactIndex = contacts.findIndex(
-			contact => contact.id === contactId
-		)
-		if (removedContactIndex === -1) return null
-
-		const removedContact = contacts.splice(removedContactIndex, 1)[0]
-		// console.log('sdf', removeContact)
-
-		await writeFile(contactsPath, JSON.stringify(contacts))
-
-		return removedContact
+		return Contact.findByIdAndDelete(contactId)
 	} catch (error) {
-		console.log('File not write', error)
+		console.log('Contact not delete', error)
 		return null
 	}
 }
 
 export async function addContact({ name, email, phone }) {
 	try {
-		const data = await readFile(contactsPath)
-		let contacts = JSON.parse(data)
-		const newContact = {
-			id: Date.now().toString(),
-			name,
-			email,
-			phone,
-		}
-		contacts.push(newContact)
-		await writeFile(contactsPath, JSON.stringify(contacts))
-		return newContact
+		return Contact.create({ name, email, phone })
 	} catch (error) {
 		return null
 	}
 }
 
-// export async function updateContact(id, userObj = {}) {
-// 	//userObj = {name, email, phone}
-// 	try {
-// 		const data = await readFile(contactsPath)
-// 		let contacts = JSON.parse(data)
-// 		const index = contacts.findIndex(contact => contact.id === id)
-// 		console.log(contacts[index])
-// 		if (index !== -1) {
-// 			contacts[index] = {
-// 				id,
-// 				...contacts[index],
-// 				...userObj,
-// 			}
-// 			await writeFile(contactsPath, JSON.stringify(contacts))
-// 			return contacts[index]
-// 		}
-// 		return null
-// 	} catch (error) {
-// 		return null
-// 	}
-// }
-export async function updateContact(id, userObj = {}) {
-	// userObj = {name, email, phone}
+export async function updateContact(id, userObj) {
 	try {
-		const data = await readFile(contactsPath)
-		let contacts = JSON.parse(data)
-		const index = contacts.findIndex(contact => contact.id === id)
-		console.log(contacts[index])
-		if (index !== -1) {
-			const updatedContact = {
-				...contacts[index],
-				name: userObj.name || contacts[index].name,
-				email: userObj.email || contacts[index].email,
-				phone: userObj.phone || contacts[index].phone,
-			}
-			contacts[index] = updatedContact
-			await writeFile(contactsPath, JSON.stringify(contacts))
-			return contacts[index]
-		}
+		return await Contact.findByIdAndUpdate(id, userObj, { new: true })
+	} catch (error) {
 		return null
+	}
+}
+
+export async function updateContactStatus(id, stateValue) {
+	try {
+		return await Contact.findByIdAndUpdate(id, stateValue, { new: true })
 	} catch (error) {
 		return null
 	}

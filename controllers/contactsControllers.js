@@ -1,5 +1,8 @@
 import HttpError from '../helpers/HttpError.js'
-import { updateContact as changeContact } from '../services/contactsServices.js'
+import {
+	updateContact as changeContact,
+	updateContactStatus,
+} from '../services/contactsServices.js'
 import {
 	listContacts,
 	getContactById,
@@ -59,4 +62,13 @@ export const updateContact = async (req, res, next) => {
 	!changedContact
 		? next(HttpError(404, 'Not found'))
 		: res.status(200).json(changedContact)
+}
+
+export const updateStatusContact = async (req, res, next) => {
+	const { id } = req.params
+	const body = req.body
+
+	const updatedContact = await updateContactStatus(id, body)
+
+	!updatedContact ? next(HttpError(404)) : res.status(200).json(updatedContact)
 }
