@@ -13,21 +13,28 @@ import {
 	updateContactSchema,
 	updateContactStatusSchema,
 } from '../schemas/contactsSchemas.js'
+import { validationID } from '../helpers/verificationID.js'
 
 const contactsRouter = express.Router()
 
 contactsRouter.get('/', getAllContacts)
 
-contactsRouter.get('/:id', getOneContact)
+contactsRouter.get('/:id', validationID, getOneContact)
 
-contactsRouter.delete('/:id', deleteContact)
+contactsRouter.delete('/:id', validationID, deleteContact)
 
 contactsRouter.post('/', validateBody(createContactSchema), createContact)
 
-contactsRouter.put('/:id', validateBody(updateContactSchema), updateContact)
+contactsRouter.put(
+	'/:id',
+	validationID,
+	validateBody(updateContactSchema),
+	updateContact
+)
 
 contactsRouter.patch(
 	'/:id/favorite',
+	validationID,
 	validateBody(updateContactStatusSchema),
 	updateStatusContact
 )
