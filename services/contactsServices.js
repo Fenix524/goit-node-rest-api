@@ -1,8 +1,8 @@
 import { Contact } from '../models/contactModel.js'
 
-export async function listContacts() {
+export async function listContacts(ownerId) {
 	try {
-		return await Contact.find()
+		return await Contact.find({ owner: ownerId })
 	} catch (error) {
 		console.log('DB not read', error)
 		return null
@@ -27,9 +27,9 @@ export async function removeContact(contactId) {
 	}
 }
 
-export async function addContact({ name, email, phone }) {
+export async function addContact(ownerId, { name, email, phone }) {
 	try {
-		return Contact.create({ name, email, phone })
+		return Contact.create({ name, email, phone, owner: ownerId })
 	} catch (error) {
 		return null
 	}
