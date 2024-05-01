@@ -1,8 +1,10 @@
 import jwt from 'jsonwebtoken'
-import HttpError from '../helpers/HttpError.js'
+import dotenv from 'dotenv'
 
-const JWT_SECRET = 'kkj207q8asQ8-3KL'
-const JWT_EXPIRES_IN = '15d'
+dotenv.config()
+
+const JWT_SECRET = process.env.JWT_SECRET
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN
 
 export const signToken = id => {
 	const token = jwt.sign({ id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN })
