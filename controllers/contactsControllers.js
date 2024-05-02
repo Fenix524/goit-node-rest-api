@@ -17,10 +17,6 @@ export const getAllContacts = async (req, res) => {
 		res.status(500).json({ message: 'Serwer error' })
 		return
 	}
-	if (!contacts.length) {
-		res.status(204).json({ message: 'The contact list is empty' })
-		return
-	}
 
 	res.status(200).json(contacts)
 }
