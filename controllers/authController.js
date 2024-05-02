@@ -64,13 +64,17 @@ export const login = async (req, res, next) => {
 }
 
 export const logout = async (req, res, next) => {
-	const user = await User.findById(req.user._id)
-	if (!user) {
-		next(HttpError(401, 'Not authorized'))
-	}
+	try {
+		const user = await User.findById(req.user._id)
+		if (!user) {
+			throw HttpError(401, 'Not authorized')
+		}
 
-	const token = await chngeUserToken(req.user._id, null)
-	res.status(204)
+		await chngeUserToken(req.user._id, null)
+		res.status(204).end()
+	} catch (error) {
+		next(error)
+	}
 }
 
 export const getMe = async (req, res, next) => {
