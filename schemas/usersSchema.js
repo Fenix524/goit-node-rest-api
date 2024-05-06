@@ -27,3 +27,7 @@ export const userLoginValidation = Joi.object({
 		'any.required': 'Password is required',
 	}),
 })
+
+export const verifyUserSchema = Joi.object({
+	email: Joi.string().email().required(),
+})
